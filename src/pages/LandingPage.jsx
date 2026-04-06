@@ -1,0 +1,181 @@
+﻿import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { Shield, QrCode, Package, Bell, BarChart2, Users, ChevronRight, CheckCircle, Menu, X } from "lucide-react";
+
+const features = [
+  { icon: Shield, title: "Instant Verification", desc: "Verify drug authenticity in seconds using QR codes and HMAC signatures", color: "text-blue-600 bg-blue-50" },
+  { icon: Package, title: "Supply Chain Tracking", desc: "Track every drug from manufacturer to pharmacy with full transparency", color: "text-emerald-600 bg-emerald-50" },
+  { icon: Bell, title: "Counterfeit Alerts", desc: "Real-time alerts when counterfeit or recalled drugs are detected", color: "text-red-600 bg-red-50" },
+  { icon: BarChart2, title: "Analytics Dashboard", desc: "Detailed reports and insights for regulators and manufacturers", color: "text-purple-600 bg-purple-50" },
+  { icon: QrCode, title: "QR Code Generation", desc: "Cryptographically signed QR codes for every batch number", color: "text-amber-600 bg-amber-50" },
+  { icon: Users, title: "Multi-Role Access", desc: "Tailored dashboards for manufacturers, pharmacists, regulators and patients", color: "text-pink-600 bg-pink-50" },
+];
+
+const steps = [
+  { num: "01", title: "Scan QR Code", desc: "Use your phone camera to scan the QR code on the drug packaging", img: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&q=80" },
+  { num: "02", title: "Instant Verification", desc: "Our system verifies the cryptographic signature and checks the database instantly", img: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=500&q=80" },
+  { num: "03", title: "Get Clear Results", desc: "Immediately know if the drug is authentic, expired, recalled or counterfeit", img: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=500&q=80" },
+];
+
+const stats = [
+  { value: "10M+", label: "Drugs Verified" },
+  { value: "500+", label: "Manufacturers" },
+  { value: "99.9%", label: "Accuracy Rate" },
+  { value: "24/7", label: "Monitoring" },
+];
+
+export default function LandingPage() {
+  const navigate = useNavigate();
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-white">
+      <nav className={"fixed top-0 left-0 right-0 z-50 transition-all duration-300 " + (scrolled ? "bg-white shadow-md" : "bg-transparent")}>
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Shield className={"w-7 h-7 " + (scrolled ? "text-[#0A2647]" : "text-white")} />
+            <span className={"text-xl font-bold " + (scrolled ? "text-[#0A2647]" : "text-white")}>DrugVerify</span>
+          </div>
+          <div className="hidden md:flex items-center gap-8">
+            {["Features", "How It Works", "Stats"].map(item => (
+              <a key={item} href={"#" + item.toLowerCase().replace(" ", "-")} className={"font-medium transition " + (scrolled ? "text-gray-600 hover:text-[#0A2647]" : "text-white hover:text-blue-200")}>{item}</a>
+            ))}
+          </div>
+          <div className="hidden md:flex items-center gap-3">
+            <button onClick={() => navigate("/login")} className={"border font-medium px-5 py-2 rounded-lg transition " + (scrolled ? "border-[#0A2647] text-[#0A2647] hover:bg-blue-50" : "border-white text-white hover:bg-white hover:bg-opacity-10")}>Login</button>
+            <button onClick={() => navigate("/register")} className="bg-white text-[#0A2647] font-bold px-5 py-2 rounded-lg hover:bg-blue-50 transition shadow-lg">Get Started</button>
+          </div>
+          <button onClick={() => setMenuOpen(!menuOpen)} className={"md:hidden " + (scrolled ? "text-gray-900" : "text-white")}>{menuOpen ? <X size={24} /> : <Menu size={24} />}</button>
+        </div>
+        {menuOpen && (
+          <div className="md:hidden bg-white border-t px-6 py-4 space-y-3">
+            <button onClick={() => navigate("/login")} className="w-full text-left text-gray-700 font-medium py-2">Login</button>
+            <button onClick={() => navigate("/register")} className="w-full bg-[#0A2647] text-white font-medium px-5 py-2 rounded-lg">Get Started</button>
+          </div>
+        )}
+      </nav>
+
+      <div className="relative min-h-screen flex items-center">
+        <div className="absolute inset-0">
+          <img
+            src="https://images.unsplash.com/photo-1666214280557-f1b5022eb634?w=1920&q=90"
+            alt="Female doctor with patient"
+            className="w-full h-full object-cover object-top"
+          />
+          <div className="absolute inset-0" style={{background: "linear-gradient(to right, rgba(10,38,71,0.92) 45%, rgba(10,38,71,0.5) 100%)"}}></div>
+        </div>
+        <div className="relative max-w-7xl mx-auto px-6 py-32">
+          <motion.div initial={{opacity:0,y:40}} animate={{opacity:1,y:0}} transition={{duration:0.8}} className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-full px-4 py-2 mb-6">
+              <CheckCircle className="w-4 h-4 text-green-400" />
+              <span className="text-white text-sm font-medium">NAFDAC Certified Platform</span>
+            </div>
+            <h1 className="text-6xl font-extrabold text-white leading-tight mb-6">
+              Verify Your Drugs,<br />
+              <span className="text-green-400">Protect Your Life</span>
+            </h1>
+            <p className="text-xl text-blue-100 mb-10 leading-relaxed max-w-xl">
+              Scan any drug QR code instantly to verify authenticity, check expiry dates, and track the full supply chain from manufacturer to your hands.
+            </p>
+            <div className="flex flex-wrap gap-4 mb-12">
+              <button onClick={() => navigate("/register")} className="flex items-center gap-2 bg-white text-[#0A2647] font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition shadow-xl text-lg">
+                Get Started Free <ChevronRight className="w-5 h-5" />
+              </button>
+              <button onClick={() => navigate("/login")} className="flex items-center gap-2 border-2 border-white border-opacity-50 text-white font-semibold px-8 py-4 rounded-xl hover:bg-white hover:bg-opacity-10 transition text-lg">
+                Sign In
+              </button>
+            </div>
+            <div className="flex items-center gap-10">
+              {[{v:"10M+",l:"Drugs Verified"},{v:"500+",l:"Manufacturers"},{v:"99.9%",l:"Accuracy"}].map((s,i) => (
+                <div key={i}>
+                  <p className="text-3xl font-extrabold text-white">{s.v}</p>
+                  <p className="text-blue-300 text-sm mt-0.5">{s.l}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      <div id="features" className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} className="text-center mb-16">
+            <h2 className="text-4xl font-extrabold text-gray-900">Everything You Need</h2>
+            <p className="text-gray-500 mt-3 text-lg max-w-2xl mx-auto">A complete drug verification ecosystem built for healthcare professionals and patients</p>
+          </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feat, i) => (
+              <motion.div key={i} initial={{opacity:0,y:30}} whileInView={{opacity:1,y:0}} transition={{delay:i*0.1}} className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-100">
+                <div className={"w-12 h-12 rounded-xl flex items-center justify-center mb-4 " + feat.color}>
+                  <feat.icon className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{feat.title}</h3>
+                <p className="text-gray-500 leading-relaxed">{feat.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div id="stats" className="bg-[#0A2647] py-16">
+        <div className="max-w-5xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          {stats.map((s, i) => (
+            <motion.div key={i} initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} transition={{delay:i*0.1}}>
+              <p className="text-4xl font-extrabold text-white">{s.value}</p>
+              <p className="text-blue-300 mt-1 font-medium">{s.label}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      <div id="how-it-works" className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} className="text-center mb-16">
+            <h2 className="text-4xl font-extrabold text-gray-900">How It Works</h2>
+            <p className="text-gray-500 mt-3 text-lg">Three simple steps to verify any drug</p>
+          </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {steps.map((step, i) => (
+              <motion.div key={i} initial={{opacity:0,y:30}} whileInView={{opacity:1,y:0}} transition={{delay:i*0.2}} className="bg-gray-50 rounded-3xl overflow-hidden border border-gray-100">
+                <img src={step.img} alt={step.title} className="w-full h-52 object-cover" />
+                <div className="p-6">
+                  <span className="text-5xl font-extrabold text-blue-100">{step.num}</span>
+                  <h3 className="text-xl font-bold text-gray-900 mt-2 mb-2">{step.title}</h3>
+                  <p className="text-gray-500">{step.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="relative py-24">
+        <img src="https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=1600&q=80" alt="Hospital" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-[#0A2647] bg-opacity-85"></div>
+        <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} className="relative max-w-3xl mx-auto text-center px-6">
+          <h2 className="text-4xl font-extrabold text-white mb-4">Ready to Protect Lives?</h2>
+          <p className="text-blue-200 text-lg mb-10">Join thousands of healthcare professionals using DrugVerify to combat counterfeit drugs in Nigeria</p>
+          <button onClick={() => navigate("/register")} className="inline-flex items-center gap-2 bg-white text-[#0A2647] font-bold px-10 py-4 rounded-xl hover:bg-blue-50 transition shadow-xl text-lg">
+            Create Free Account <ChevronRight className="w-5 h-5" />
+          </button>
+        </motion.div>
+      </div>
+
+      <footer className="bg-gray-900 text-gray-400 py-8 text-center">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <Shield className="w-5 h-5 text-blue-500" />
+          <span className="text-white font-bold">DrugVerify</span>
+        </div>
+        <p className="text-sm">2026 DrugVerify. Powered by NAFDAC Drug Verification System. All rights reserved.</p>
+      </footer>
+    </div>
+  );
+}

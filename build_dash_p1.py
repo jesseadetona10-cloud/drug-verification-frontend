@@ -1,0 +1,17 @@
+﻿lines = []
+lines.append('import { useState, useEffect } from "react";')
+lines.append('import { motion } from "framer-motion";')
+lines.append('import { useAuth } from "../context/AuthContext";')
+lines.append('import { useNavigate } from "react-router-dom";')
+lines.append('import API from "../utils/api";')
+lines.append('')
+lines.append('const Sidebar = ({ active, setActive, logout, user }) => {')
+lines.append('  const items = [{ id:"dashboard",label:"Dashboard",icon:"D"},{id:"drugs",label:"My Drugs",icon:"R"},{id:"batches",label:"Batches",icon:"B"},{id:"qrcodes",label:"QR Codes",icon:"Q"},{id:"supplychain",label:"Supply Chain",icon:"S"}];')
+lines.append('  return (<div className="w-64 bg-primary-900 min-h-screen flex flex-col"><div className="p-6 border-b border-primary-700"><div className="flex items-center gap-2"><img src="https://cdn-icons-png.flaticon.com/512/2913/2913421.png" alt="logo" className="w-8 h-8" /><span className="text-white text-xl font-bold">DrugVerify</span></div><p className="text-blue-300 text-xs mt-1">Manufacturer Portal</p></div><div className="p-4 border-b border-primary-700"><p className="text-white font-medium text-sm truncate">{user?.company_name||user?.email}</p><p className="text-blue-300 text-xs mt-1">{user?.email}</p></div><nav className="flex-1 p-4 space-y-1">{items.map(item=>(<button key={item.id} onClick={()=>setActive(item.id)} className={"w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition "+(active===item.id?"bg-primary-600 text-white":"text-blue-200 hover:bg-primary-800")}><span className="w-5 h-5 rounded bg-white bg-opacity-20 flex items-center justify-center text-xs font-bold">{item.icon}</span><span className="font-medium">{item.label}</span></button>))}</nav><div className="p-4 border-t border-primary-700"><button onClick={logout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-blue-200 hover:bg-primary-800 transition"><span className="w-5 h-5 rounded bg-white bg-opacity-20 flex items-center justify-center text-xs font-bold">X</span><span>Logout</span></button></div></div>);')
+lines.append('};')
+lines.append('')
+lines.append('const StatCard = ({ title, value, icon, color }) => (<motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} className={"rounded-2xl p-6 flex items-center gap-4 "+color}><div className="text-4xl">{icon}</div><div><p className="text-sm font-medium opacity-70">{title}</p><p className="text-3xl font-bold">{value??0}</p></div></motion.div>);')
+lines.append('')
+with open('src/pages/ManufacturerDashboard.jsx', 'w', encoding='utf-8') as f:
+    f.write('\n'.join(lines) + '\n')
+print('Part 1 done')
