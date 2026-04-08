@@ -19,7 +19,7 @@ export default function MyDrugsPage() {
   useEffect(() => { fetchDrugs(); }, []);
 
   const fetchDrugs = async () => {
-    try { const res = await API.get("/drugs/"); setDrugs(res.data); }
+    try { const res = await API.get("/drugs/"); setDrugs(res.data.results || res.data); }
     catch(e) { console.error(e); }
     finally { setLoading(false); }
   };
@@ -206,3 +206,4 @@ export default function MyDrugsPage() {
     </DashboardLayout>
   );
 }
+

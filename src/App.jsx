@@ -5,15 +5,23 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ManufacturerDashboard from "./pages/ManufacturerDashboard";
 import MyDrugsPage from "./pages/MyDrugsPage";
+import BatchesPage from "./pages/BatchesPage";
 import PharmacistDashboard from "./pages/PharmacistDashboard";
 import RegulatorDashboard from "./pages/RegulatorDashboard";
-import PatientPage from "./pages/PatientPage";
 import AlertsPage from "./pages/AlertsPage";
 import UsersPage from "./pages/UsersPage";
+import PatientPage from "./pages/PatientPage";
+import ProfilePage from "./pages/ProfilePage";
+import VerifyPage from "./pages/VerifyPage";
+import VerificationHistoryPage from "./pages/VerificationHistoryPage";
 
 const ProtectedRoute = ({ children, roles }) => {
   const { user, loading } = useAuth();
-  if (loading) return <div className="flex items-center justify-center h-screen"><div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-blue-700"></div></div>;
+  if (loading) return (
+    <div className="flex items-center justify-center h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-blue-700"></div>
+    </div>
+  );
   if (!user) return <Navigate to="/login" />;
   if (roles && !roles.includes(user.role)) return <Navigate to="/login" />;
   return children;
@@ -22,7 +30,13 @@ const ProtectedRoute = ({ children, roles }) => {
 const DashboardRedirect = () => {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" />;
-  const routes = { manufacturer: "/manufacturer", pharmacist: "/pharmacist", regulator: "/regulator", patient: "/patient", wholesaler: "/pharmacist" };
+  const routes = {
+    manufacturer: "/manufacturer",
+    pharmacist: "/pharmacist",
+    regulator: "/regulator",
+    patient: "/patient",
+    wholesaler: "/pharmacist"
+  };
   return <Navigate to={routes[user.role] || "/login"} />;
 };
 
@@ -35,20 +49,29 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/dashboard" element={<ProtectedRoute><DashboardRedirect /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+
+          {/* Manufacturer */}
           <Route path="/manufacturer" element={<ProtectedRoute roles={["manufacturer"]}><ManufacturerDashboard /></ProtectedRoute>} />
           <Route path="/manufacturer/drugs" element={<ProtectedRoute roles={["manufacturer"]}><MyDrugsPage /></ProtectedRoute>} />
-          <Route path="/manufacturer/batches" element={<ProtectedRoute roles={["manufacturer"]}><MyDrugsPage /></ProtectedRoute>} />
+          <Route path="/manufacturer/batches" element={<ProtectedRoute roles={["manufacturer"]}><BatchesPage /></ProtectedRoute>} />
           <Route path="/manufacturer/alerts" element={<ProtectedRoute roles={["manufacturer"]}><AlertsPage /></ProtectedRoute>} />
+
+          {/* Pharmacist */}
           <Route path="/pharmacist" element={<ProtectedRoute roles={["pharmacist","wholesaler"]}><PharmacistDashboard /></ProtectedRoute>} />
-          <Route path="/pharmacist/verify" element={<ProtectedRoute roles={["pharmacist","wholesaler"]}><PharmacistDashboard /></ProtectedRoute>} />
-          <Route path="/pharmacist/history" element={<ProtectedRoute roles={["pharmacist","wholesaler"]}><PharmacistDashboard /></ProtectedRoute>} />
+          <Route path="/pharmacist/verify" element={<ProtectedRoute roles={["pharmacist","wholesaler"]}><VerifyPage /></ProtectedRoute>} />
+          <Route path="/pharmacist/history" element={<ProtectedRoute roles={["pharmacist","wholesaler"]}><VerificationHistoryPage /></ProtectedRoute>} />
+
+          {/* Regulator */}
           <Route path="/regulator" element={<ProtectedRoute roles={["regulator"]}><RegulatorDashboard /></ProtectedRoute>} />
           <Route path="/regulator/drugs" element={<ProtectedRoute roles={["regulator"]}><RegulatorDashboard /></ProtectedRoute>} />
           <Route path="/regulator/alerts" element={<ProtectedRoute roles={["regulator"]}><AlertsPage /></ProtectedRoute>} />
           <Route path="/regulator/analytics" element={<ProtectedRoute roles={["regulator"]}><RegulatorDashboard /></ProtectedRoute>} />
           <Route path="/regulator/users" element={<ProtectedRoute roles={["regulator"]}><UsersPage /></ProtectedRoute>} />
+
+          {/* Patient */}
           <Route path="/patient" element={<ProtectedRoute roles={["patient"]}><PatientPage /></ProtectedRoute>} />
-          <Route path="/patient/history" element={<ProtectedRoute roles={["patient"]}><PatientPage /></ProtectedRoute>} />
+          <Route path="/patient/history" element={<ProtectedRoute roles={["patient"]}><VerificationHistoryPage /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

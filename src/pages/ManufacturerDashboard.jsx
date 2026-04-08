@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import DashboardLayout from "../components/layout/DashboardLayout";
 import API from "../utils/api";
@@ -34,7 +34,8 @@ export default function ManufacturerDashboard() {
   const fetchData = async () => {
     try {
       const [d, s] = await Promise.all([API.get("/drugs/"), API.get("/analytics/dashboard/")]);
-      setDrugs(d.data); setStats(s.data);
+      setDrugs(d.data.results || d.data);
+      setStats(s.data);
     } catch(e) { console.error(e); }
     finally { setLoading(false); }
   };
@@ -46,11 +47,17 @@ export default function ManufacturerDashboard() {
       setShowAdd(false);
       setForm({ name: "", generic_name: "", nafdac_number: "", description: "", dosage_form: "", strength: "" });
       fetchData();
-    } catch(e) { setError(e.response?.data?.nafdac_number?.[0] || "Failed to add drug"); }
+    } catch(e) { setError(e.response?.data?.nafdac_number?.[0] || e.response?.data?.detail || "Failed to add drug"); }
     finally { setSaving(false); }
   };
 
-  if (loading) return <DashboardLayout title="Dashboard"><div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-primary-700"></div></div></DashboardLayout>;
+  if (loading) return (
+    <DashboardLayout title="Dashboard">
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-blue-700"></div>
+      </div>
+    </DashboardLayout>
+  );
 
   return (
     <DashboardLayout title={"Welcome, " + (user?.company_name || user?.email)} subtitle="Manage your drugs, batches and monitor verifications">
@@ -62,10 +69,10 @@ export default function ManufacturerDashboard() {
         <StatCard title="Active Alerts" value={stats.unresolved_alerts ?? 0} icon={AlertTriangle} gradient="bg-gradient-to-br from-rose-600 to-rose-400" delay={0.3} />
       </div>
 
-      <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.4}} className="bg-white rounded-2xl shadow-sm border border-gray-100">
-        <div className="flex justify-between items-center p-6 border-b border-gray-100">
+      <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.4}} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+        <div className="flex justify-between items-center p-6 border-b border-gray-100 dark:border-gray-700">
           <div>
-            <h2 className="text-lg font-bold text-gray-900">My Drugs</h2>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">My Drugs</h2>
             <p className="text-sm text-gray-400 mt-0.5">{drugs.length} drug{drugs.length !== 1 ? "s" : ""} registered</p>
           </div>
           <button onClick={() => setShowAdd(!showAdd)} className="flex items-center gap-2 bg-[#0A2647] text-white px-5 py-2.5 rounded-xl hover:bg-[#1B4F72] transition font-medium text-sm shadow-sm">
@@ -75,14 +82,15 @@ export default function ManufacturerDashboard() {
         </div>
 
         {showAdd && (
-          <motion.div initial={{opacity:0,height:0}} animate={{opacity:1,height:"auto"}} className="border-b border-gray-100 p-6 bg-blue-50">
-            <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2"><Plus className="w-4 h-4" /> Add New Drug</h3>
+          <motion.div initial={{opacity:0,height:0}} animate={{opacity:1,height:"auto"}} className="border-b border-gray-100 p-6 bg-blue-50 dark:bg-gray-700">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2"><Plus className="w-4 h-4" /> Add New Drug</h3>
+            <p className="text-xs text-gray-500 mb-4">NAFDAC format: <span className="font-mono font-bold">A4-1234</span> (Letter + Number + dash + 4 digits)</p>
             {error && <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-2 rounded-lg mb-4 text-sm">{error}</div>}
             <form onSubmit={handleAdd} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[["name","Drug Name",true],["generic_name","Generic Name",false],["nafdac_number","NAFDAC Number",true],["dosage_form","Dosage Form",true],["strength","Strength",true],["description","Description",false]].map(([key,label,req]) => (
+              {[["name","Drug Name",true],["generic_name","Generic Name",false],["nafdac_number","NAFDAC Number (e.g. A4-1234)",true],["dosage_form","Dosage Form",true],["strength","Strength",true],["description","Description",false]].map(([key,label,req]) => (
                 <div key={key} className={key === "description" ? "md:col-span-2" : ""}>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">{label}{req && <span className="text-red-400 ml-1">*</span>}</label>
-                  <input value={form[key]} onChange={e=>setForm({...form,[key]:e.target.value})} required={req} className="w-full border border-gray-200 bg-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition" />
+                  <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wide">{label}{req && <span className="text-red-400 ml-1">*</span>}</label>
+                  <input value={form[key]} onChange={e=>setForm({...form,[key]:e.target.value})} required={req} className="w-full border border-gray-200 bg-white dark:bg-gray-600 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition" />
                 </div>
               ))}
               <div className="md:col-span-2 flex gap-3 pt-2">
@@ -103,19 +111,25 @@ export default function ManufacturerDashboard() {
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-100">
-                  {["Drug Name","Generic Name","NAFDAC No.","Dosage Form","Strength","Status","Batches"].map(h => <th key={h} className="text-left py-3 px-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">{h}</th>)}
+                <tr className="bg-gray-50 dark:bg-gray-700 border-b border-gray-100 dark:border-gray-600">
+                  {["Drug Name","Generic Name","NAFDAC No.","Dosage Form","Strength","Status","Batches"].map(h => (
+                    <th key={h} className="text-left py-3 px-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">{h}</th>
+                  ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-gray-50 dark:divide-gray-700">
                 {drugs.map(drug => (
-                  <tr key={drug.id} className="hover:bg-gray-50 transition">
-                    <td className="py-4 px-5 font-semibold text-gray-900">{drug.name}</td>
+                  <tr key={drug.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    <td className="py-4 px-5 font-semibold text-gray-900 dark:text-white">{drug.name}</td>
                     <td className="py-4 px-5 text-gray-500">{drug.generic_name || "-"}</td>
-                    <td className="py-4 px-5 font-mono text-xs text-gray-500 bg-gray-50">{drug.nafdac_number}</td>
+                    <td className="py-4 px-5 font-mono text-xs text-gray-500">{drug.nafdac_number}</td>
                     <td className="py-4 px-5 text-gray-500">{drug.dosage_form}</td>
                     <td className="py-4 px-5 text-gray-500">{drug.strength}</td>
-                    <td className="py-4 px-5"><span className={"px-3 py-1 rounded-full text-xs font-semibold " + (drug.status === "active" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-red-50 text-red-700 border border-red-200")}>{drug.status}</span></td>
+                    <td className="py-4 px-5">
+                      <span className={"px-3 py-1 rounded-full text-xs font-semibold border " + (drug.status === "active" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : drug.status === "pending" ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-red-50 text-red-700 border-red-200")}>
+                        {drug.status}
+                      </span>
+                    </td>
                     <td className="py-4 px-5 text-gray-500 font-semibold">{drug.batches?.length || 0}</td>
                   </tr>
                 ))}

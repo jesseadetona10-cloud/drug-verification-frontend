@@ -15,7 +15,7 @@ export default function UsersPage() {
     try {
       const url = roleFilter ? "/auth/users/?role=" + roleFilter : "/auth/users/";
       const res = await API.get(url);
-      setUsers(res.data);
+      setUsers(res.data.results || res.data);
     } catch(e) { console.error(e); }
     finally { setLoading(false); }
   };
@@ -87,3 +87,4 @@ export default function UsersPage() {
     </DashboardLayout>
   );
 }
+
