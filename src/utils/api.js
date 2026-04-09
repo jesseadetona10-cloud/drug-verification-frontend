@@ -1,7 +1,9 @@
-import axios from "axios";
+﻿import axios from "axios";
+
+const BASE_URL = import.meta.env.VITE_API_URL || "https://drug-verification-backend.onrender.com/api";
 
 const API = axios.create({
-  baseURL: "http://127.0.0.1:8000/api",
+  baseURL: BASE_URL,
 });
 
 API.interceptors.request.use((config) => {
@@ -19,7 +21,7 @@ API.interceptors.response.use(
       const refresh = localStorage.getItem("refresh_token");
       if (refresh) {
         try {
-          const res = await axios.post("http://127.0.0.1:8000/api/auth/token/refresh/", { refresh });
+          const res = await axios.post(BASE_URL + "/auth/token/refresh/", { refresh });
           localStorage.setItem("access_token", res.data.access);
           error.config.headers.Authorization = "Bearer " + res.data.access;
           return API(error.config);
